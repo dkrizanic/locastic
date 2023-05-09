@@ -5,6 +5,7 @@
     "description": "A minimal Symfony project recommended to create bare bones applications",
     "minimum-stability": "stable",
     "prefer-stable": true,
+
     "require": {
         "php": ">=8.1",
         "ext-ctype": "*",
@@ -15,6 +16,7 @@
         "doctrine/orm": "^2.15",
         "phpdocumentor/reflection-docblock": "^5.3",
         "phpstan/phpdoc-parser": "^1.20",
+        "ramsey/uuid": "*",
         "sensio/framework-extra-bundle": "^6.1",
         "symfony/asset": "6.2.*",
         "symfony/console": "6.2.*",
@@ -43,7 +45,8 @@
         "symfony/web-link": "6.2.*",
         "symfony/yaml": "6.2.*",
         "twig/extra-bundle": "^2.12|^3.0",
-        "twig/twig": "^2.12|^3.0"
+        "twig/twig": "^2.12|^3.0",
+        "phpoffice/phpspreadsheet": "1.*"
     },
     "config": {
         "allow-plugins": {
@@ -82,6 +85,33 @@
         ],
         "post-update-cmd": [
             "@auto-scripts"
+        ],
+        "ca:cl": [
+            "bin/console ca:cl"
+        ],
+        "php-cs-fixer": [
+            "php-cs-fixer fix --allow-risky=yes"
+        ],
+        "phpstan": [
+            "phpstan analyse --level=8 --memory-limit=512M src/"
+        ],
+        "db:create": [
+            "php bin/console doctrine:database:create --if-not-exists --no-interaction"
+        ],
+        "db:drop": [
+            "php bin/console doctrine:database:drop --force --if-exists --no-interaction"
+        ],
+        "db:migrate": [
+            "php bin/console doctrine:migrations:migrate --allow-no-migration --no-interaction"
+        ],
+        "db:fixtures": [
+            "php bin/console doctrine:fixtures:load --group=default --no-interaction"
+        ],
+        "db:init": [
+            "@db:drop",
+            "@db:create",
+            "@db:migrate",
+            "@db:fixtures"
         ]
     },
     "conflict": {
@@ -94,11 +124,12 @@
         }
     },
     "require-dev": {
+        "friendsofphp/php-cs-fixer": "^3.16",
         "phpunit/phpunit": "^9.5",
         "symfony/browser-kit": "6.2.*",
         "symfony/css-selector": "6.2.*",
         "symfony/debug-bundle": "6.2.*",
-        "symfony/maker-bundle": "^1.0",
+        "symfony/maker-bundle": "^1.48",
         "symfony/phpunit-bridge": "^6.2",
         "symfony/stopwatch": "6.2.*",
         "symfony/web-profiler-bundle": "6.2.*"
