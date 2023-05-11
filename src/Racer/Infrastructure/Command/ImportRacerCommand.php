@@ -29,7 +29,6 @@ class ImportRacerCommand extends ImportCommand
     protected static $defaultName = 'app:racer:import-race';
     protected const FILE_PATH_ARGUMENT = 'file_path';
     protected const RACE_TITLE = 'Race title';
-    protected const RACE_DATE = 'Race date';
 
     public function __construct(
         private readonly RacerImporter $racerImporter,
@@ -53,13 +52,8 @@ class ImportRacerCommand extends ImportCommand
                 InputArgument::REQUIRED,
                 'Race title'
             )
-            ->addArgument(
-                self::RACE_DATE,
-                InputArgument::REQUIRED,
-                'Race date'
-            )
             ->setDescription('Imports race based on rows in the referenced table')
-            ->setHelp('This command allows you to import a batch of reservations from a structured Excel/CSV file');
+            ->setHelp('This command allows you to import a batch of races from a structured Excel/CSV file');
     }
 
     protected function initialize(InputInterface $input, OutputInterface $output): void
@@ -91,11 +85,14 @@ class ImportRacerCommand extends ImportCommand
         );
 
         if ($raceExists === true) {
-            $this->inputOutput->error('Race already exists');
+            $this->inputOutput->error(sprintf('Race %s already exists!', $raceTitle));
+
+            // return Command::FAILURE;
         }
 
-        /** @var \DateTimeImmutable $raceDate */
-        $raceDate = $input->getArgument(self::RACE_DATE);
+        $dateTimeNow = new \DateTime();
+        $dateTimeToday = $dateTimeNow->format('Y/m/d');
+        $raceDate = new \DateTimeImmutable($dateTimeToday);
 
         try {
             $spreadSheet = $this->loadSpreadSheet($filePath)->getActiveSheet();
@@ -108,8 +105,11 @@ class ImportRacerCommand extends ImportCommand
 
             $spreadSheet->removeRow($firstHeaderRow, $headerRowsCount);
 
+            $spreadSheetData = $spreadSheet->toArray(null, true, false, true);
+            $this->array_sort_by_column($spreadSheetData, 'C');
+
             $dataDTO = new RacerImportSheetDataDTO(
-                $spreadSheet->toArray(null, false, false, true),
+                $spreadSheetData,
                 $headerRowsCount,
                 $raceTitle,
                 $raceDate
@@ -150,8 +150,16 @@ class ImportRacerCommand extends ImportCommand
         return IOFactory::load($filePath);
     }
 
-    public function sortData():array
+    /**
+     * @param array<mixed> $arr
+     */
+    public function array_sort_by_column(array &$arr, string $col, int $dir = SORT_ASC): void
     {
+        $sort_col = [];
+        foreach ($arr as $key => $row) {
+            $sort_col[$key] = $row[$col];
+        }
 
+        array_multisort($sort_col, $dir, $arr);
     }
 }

@@ -20,7 +20,7 @@ class Racer
         #[ORM\Column(length: 255)]
         private string $fullName,
         #[ORM\Column]
-        private \DateTimeImmutable $finishTime,
+        private int $finishTime,
         #[ORM\Column(length: 255)]
         private string $distance,
         #[ORM\Column(length: 255)]
@@ -31,7 +31,7 @@ class Racer
     ) {
     }
 
-    public function getId(): int
+    public function getId(): string
     {
         return $this->id;
     }
@@ -56,12 +56,12 @@ class Racer
         $this->ageCategory = $ageCategory;
     }
 
-    public function getFinishTime(): \DateTimeImmutable
+    public function getFinishTime(): int
     {
         return $this->finishTime;
     }
 
-    public function setFinishTime(\DateTimeImmutable $finishTime): void
+    public function setFinishTime(int $finishTime): void
     {
         $this->finishTime = $finishTime;
     }

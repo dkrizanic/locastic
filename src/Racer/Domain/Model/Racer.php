@@ -2,6 +2,8 @@
 
 namespace App\Racer\Domain\Model;
 
+use App\Entity\Race;
+
 class Racer
 {
     private ?int $ageCategoryPlacement = null;
@@ -10,10 +12,10 @@ class Racer
     public function __construct(
         public readonly string $id,
         private string $fullName,
-        private \DateTimeImmutable $finishTime,
+        private int $finishTime,
         private string $distance,
         private string $ageCategory,
-        private string $raceId,
+        private Race $race,
     ) {
     }
 
@@ -27,7 +29,7 @@ class Racer
         return $this->fullName;
     }
 
-    public function getFinishTime(): \DateTimeImmutable
+    public function getFinishTime(): int
     {
         return $this->finishTime;
     }
@@ -42,9 +44,9 @@ class Racer
         return $this->ageCategory;
     }
 
-    public function getRaceId(): string
+    public function getRace(): Race
     {
-        return $this->raceId;
+        return $this->race;
     }
 
     public function getOverallPlacement(): ?int

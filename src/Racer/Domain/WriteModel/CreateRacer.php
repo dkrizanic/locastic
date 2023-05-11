@@ -10,11 +10,11 @@ class CreateRacer
         public readonly string $id,
         public readonly string $fullName,
         public readonly string $distance,
-        public readonly \DateTimeImmutable $finishTime,
+        public readonly int $finishTime,
         public readonly string $ageCategory,
         public readonly string $raceId,
-        public readonly ?string $overallPlacement = null,
-        public readonly ?string $ageCategoryPlacement = null,
+        public readonly ?int $overallPlacement = null,
+        public readonly ?int $ageCategoryPlacement = null,
     ) {
     }
 }

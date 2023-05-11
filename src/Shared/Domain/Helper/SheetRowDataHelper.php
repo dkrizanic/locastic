@@ -17,25 +17,15 @@ trait SheetRowDataHelper
     /**
      * @param array<string, mixed> $rowData
      */
-    protected function getInteger(array $rowData, string $column): ?int
+    protected function getTimeInSeconds(array $rowData, string $column): int
     {
-        // Integers are sometimes cast to float values in Excel files
         $rawValue = $this->getTrimmedString($rowData, $column);
 
-        if ('' === $rawValue) {
-            return null;
+        sscanf($rawValue, '%d:%d:%d', $hours, $minutes, $seconds);
+        if (is_numeric($hours) === true && is_numeric($minutes) === true) {
+            return (int) (($hours * 3600) + ($minutes * 60) + $seconds);
         }
 
-        return (int) $rawValue;
-    }
-
-    /**
-     * @param array<string, mixed> $rowData
-     */
-    protected function getDateTimeImmutable(array $rowData, string $column): \DateTimeImmutable
-    {
-        $rawValue = $this->getTrimmedString($rowData, $column);
-
-        return new \DateTimeImmutable($rawValue);
+        return 0;
     }
 }

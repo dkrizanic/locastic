@@ -2,6 +2,7 @@
 
 namespace App\Racer\Infrastructure\Persistence\Repository;
 
+use App\Entity\Race as DoctrineRace;
 use App\Entity\Racer as DoctrineRacer;
 use App\Racer\Domain\Model\Racer;
 use App\Racer\Domain\Repository\RacerRepository;
@@ -20,13 +21,19 @@ class DoctrineRacerRepository implements RacerRepository
 
     public function add(CreateRacerWriteModel $racer): Racer
     {
+        /** @var DoctrineRace $race */
+        $race = $this->entityManager->getReference(
+            DoctrineRace::class,
+            $racer->raceId
+        );
+
         $entity = new DoctrineRacer(
             $racer->id,
             $racer->fullName,
             $racer->finishTime,
             $racer->distance,
             $racer->ageCategory,
-            $racer->raceId,
+            $race,
         );
 
         $entity->setOverallPlacement($racer->overallPlacement);

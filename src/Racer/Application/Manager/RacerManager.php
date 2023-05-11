@@ -2,14 +2,11 @@
 
 declare(strict_types=1);
 
-namespace App\CheckIn\Application\Manager;
-
-use App\Shared\Application\Factory\UuidGeneratorInterface;
+namespace App\Racer\Application\Manager;
 
 class RacerManager
 {
     public function __construct(
-        private readonly UuidGeneratorInterface $uuidGenerator
     ) {
     }
 

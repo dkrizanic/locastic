@@ -2,7 +2,9 @@
 
 namespace App\Shared\Application\Events;
 
-class NewRaceImportedEvent implements \App\Shared\Application\EventStore\Event
+use App\Shared\Application\EventStore\Event;
+
+class NewRaceImportedEvent implements Event
 {
     public function __construct(
         private readonly string $raceId,

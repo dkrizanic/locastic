@@ -8,10 +8,10 @@ use App\Shared\Domain\DTO\SheetRowDataDTO;
 
 class RacerImportSheetRowDataDTO extends SheetRowDataDTO
 {
-    final public const RACER_FULL_NAME_COLUMN = 'fullName';
-    final public const RACER_DISTANCE_COLUMN = 'distance';
-    final public const RACER_FINISH_TIME_COLUMN = 'finishTime';
-    final public const RACER_AGE_CATEGORY_COLUMN = 'ageCategory';
+    final public const RACER_FULL_NAME_COLUMN = 'A';
+    final public const RACER_DISTANCE_COLUMN = 'B';
+    final public const RACER_FINISH_TIME_COLUMN = 'C';
+    final public const RACER_AGE_CATEGORY_COLUMN = 'D';
 
     public function shouldSkipReservationCreation(): bool
     {
@@ -41,9 +41,9 @@ class RacerImportSheetRowDataDTO extends SheetRowDataDTO
         return $this->getTrimmedString($this->rowData, self::RACER_DISTANCE_COLUMN);
     }
 
-    public function getFinishTime(): \DateTimeImmutable
+    public function getFinishTime(): int
     {
-        return $this->getDateTimeImmutable($this->rowData, self::RACER_FINISH_TIME_COLUMN);
+        return $this->getTimeInSeconds($this->rowData, self::RACER_FINISH_TIME_COLUMN);
     }
 
     public function getAgeCategory(): string

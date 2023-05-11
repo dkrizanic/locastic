@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Race\Infrastructure\Repository\Persistence;
+namespace App\Race\Infrastructure\Persistence\Repository;
 
 use App\Entity\Race as DoctrineRace;
 use App\Race\Domain\Model\Race;

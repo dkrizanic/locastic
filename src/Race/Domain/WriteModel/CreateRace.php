@@ -4,12 +4,14 @@ declare(strict_types=1);
 
 namespace App\Race\Domain\WriteModel;
 
+use DateTimeImmutable;
+
 class CreateRace
 {
     public function __construct(
         public readonly string $id,
         public readonly string $title,
-        public readonly \DateTimeImmutable $dateTime,
+        public readonly DateTimeImmutable $dateTime,
     ) {
     }
 }

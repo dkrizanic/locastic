@@ -13,19 +13,21 @@ use App\Shared\Application\Events\NewRaceImportedEvent;
 use App\Shared\Application\EventStore\EventStore;
 use App\Shared\Application\Factory\UuidGeneratorInterface;
 use App\Shared\Application\Importer\EntityManagerResettableImporter;
-use App\Shared\Application\Importer\ProgressibleImporter;
+use App\Shared\Application\Importer\ProgressableImporter;
 
 /**
  * @SuppressWarnings(PHPMD.ExcessiveParameterList)
  */
 class RacerImporter
 {
-    use ProgressibleImporter;
+    use ProgressableImporter;
     use EntityManagerResettableImporter;
+
+    private int $racerInFrontFinishTime = 0;
 
     public function __construct(
         private readonly UuidGeneratorInterface $uuidGenerator,
-        private readonly RacerRepository $raceRepository,
+        private readonly RacerRepository $racerRepository,
         private readonly EventStore $eventStore,
     ) {
     }
@@ -39,17 +41,41 @@ class RacerImporter
 
         $raceId = $this->uuidGenerator->generate();
 
-
         $this->createRace(
             $raceId,
             $dataDTO->getRaceTitle(),
             $dataDTO->getRaceDate(),
         );
 
-
+        $overallPlacement = 0;
+        $rowDataDTOs = [];
         foreach ($dataDTO->getData() as $rowDataDTO) {
             try {
-                $this->createRacer($raceId, $rowDataDTO, $racerImportResultDTO);
+                if ($rowDataDTO->getDistance() === 'long') {
+                    if ($this->racerInFrontFinishTime !== $rowDataDTO->getFinishTime()) {
+                        ++$overallPlacement;
+                        $incrementAgeCategoryPlacement = 1;
+                    } else {
+                        $incrementAgeCategoryPlacement = 0;
+                    }
+                    $placement = $overallPlacement;
+
+                    $rowDataDTOKey = sprintf('%s', $rowDataDTO->getAgeCategory());
+                    if (!array_key_exists($rowDataDTOKey, $rowDataDTOs)) {
+                        $rowDataDTOs[$rowDataDTOKey] = 1;
+                    } else {
+                        $rowDataDTOs[$rowDataDTOKey] = $rowDataDTOs[$rowDataDTOKey] + $incrementAgeCategoryPlacement;
+                    }
+
+                    $ageCategoryPlacement = $rowDataDTOs[$rowDataDTOKey];
+                } else {
+                    $placement = null;
+                    $ageCategoryPlacement = null;
+                }
+
+                $this->createRacer($raceId, $rowDataDTO, $racerImportResultDTO, $placement, $ageCategoryPlacement);
+
+                $this->racerInFrontFinishTime = $rowDataDTO->getFinishTime();
             } catch (\Throwable $exception) {
                 $racerImportResultDTO->addFailure($rowDataDTO->getRowNumber(), $exception->getMessage());
 
@@ -71,6 +97,8 @@ class RacerImporter
         string $raceId,
         RacerImportSheetRowDataDTO $rowDataDTO,
         RacerImportResultDTO $resultDTO,
+        ?int $overallPlacement,
+        ?int $ageCategoryPlacement,
     ): void {
         if (true === $rowDataDTO->shouldSkipReservationCreation()) {
             ++$resultDTO->skippedRowsCount;
@@ -78,7 +106,7 @@ class RacerImporter
             throw new \Exception('Not all required cells have proper values in the table row');
         }
 
-        $this->raceRepository->add($this->createRacerWriteModel($rowDataDTO, $raceId));
+        $this->racerRepository->add($this->createRacerWriteModel($rowDataDTO, $raceId, $overallPlacement, $ageCategoryPlacement));
 
         ++$resultDTO->racerImportsCount;
     }
@@ -94,6 +122,8 @@ class RacerImporter
     private function createRacerWriteModel(
         RacerImportSheetRowDataDTO $racerDataDTO,
         string $raceId,
+        ?int $overallPlacement,
+        ?int $ageCategoryPlacement
     ): CreateRacerWriteModel {
         $uuid = $this->uuidGenerator->generate();
 
@@ -103,7 +133,9 @@ class RacerImporter
             $racerDataDTO->getDistance(),
             $racerDataDTO->getFinishTime(),
             $racerDataDTO->getAgeCategory(),
-            $raceId
+            $raceId,
+            $overallPlacement,
+            $ageCategoryPlacement,
         );
     }
 }

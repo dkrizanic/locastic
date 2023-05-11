@@ -4,6 +4,9 @@ declare(strict_types=1);
 
 namespace App\Racer\Domain\DTO;
 
+use DateTimeImmutable;
+use Generator;
+
 class RacerImportSheetDataDTO
 {
     private int $dataCount;
@@ -12,15 +15,15 @@ class RacerImportSheetDataDTO
      * @param array<int, array<string, mixed>> $data
      */
     public function __construct(
-        private readonly array $data,
+        private array $data,
         private readonly int $headerRowsCount,
         private readonly string $raceTitle,
-        private readonly \DateTimeImmutable $raceDate,
+        private readonly DateTimeImmutable $raceDate,
     ) {
         $this->dataCount = count($this->data);
     }
 
-    public function getData(): \Generator
+    public function getData(): Generator
     {
         foreach ($this->data as $rowIndex => $rowData) {
             yield new RacerImportSheetRowDataDTO($rowData, $rowIndex + $this->headerRowsCount);
@@ -40,5 +43,13 @@ class RacerImportSheetDataDTO
     public function getRaceTitle(): string
     {
         return $this->raceTitle;
+    }
+
+    /**
+     * @param array<int, array<string, mixed>> $data
+     */
+    public function setData(array $data): void
+    {
+        $this->data = $data;
     }
 }

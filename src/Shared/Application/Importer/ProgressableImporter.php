@@ -6,7 +6,7 @@ namespace App\Shared\Application\Importer;
 
 use App\Shared\Application\Command\ProgressAwareCommand;
 
-trait ProgressibleImporter
+trait ProgressableImporter
 {
     private ProgressAwareCommand $progressAwareCommand;
 

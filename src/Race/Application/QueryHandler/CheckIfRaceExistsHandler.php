@@ -14,7 +14,7 @@ class CheckIfRaceExistsHandler implements QueryHandler
     {
     }
 
-    public function __invoke(CheckIfRaceExists $query): int
+    public function __invoke(CheckIfRaceExists $query): bool
     {
         return $this->raceRepository->exists($query->title);
     }

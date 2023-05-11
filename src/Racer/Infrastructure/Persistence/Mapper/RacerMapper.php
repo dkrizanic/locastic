@@ -15,7 +15,7 @@ class RacerMapper
             $racerEntity->getFinishTime(),
             $racerEntity->getDistance(),
             $racerEntity->getAgeCategory(),
-            $racerEntity->getRaceId(),
+            $racerEntity->getRace(),
         );
 
         $domainObject->setOverallPlacement($racerEntity->getOverallPlacement());
