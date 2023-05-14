@@ -10,6 +10,7 @@ use App\Racer\Domain\DTO\RacerImportSheetRowDataDTO;
 use App\Racer\Domain\Repository\RacerRepository;
 use App\Racer\Domain\WriteModel\CreateRacer as CreateRacerWriteModel;
 use App\Shared\Application\Events\NewRaceImportedEvent;
+use App\Shared\Application\Events\UpdateRaceAverageFinishTimeEvent;
 use App\Shared\Application\EventStore\EventStore;
 use App\Shared\Application\Factory\UuidGeneratorInterface;
 use App\Shared\Application\Importer\EntityManagerResettableImporter;
@@ -45,14 +46,23 @@ class RacerImporter
             $raceId,
             $dataDTO->getRaceTitle(),
             $dataDTO->getRaceDate(),
+            0,
+            0
         );
 
         $overallPlacement = 0;
+        $countOfLongDistanceRacers = 0;
+        $countOfMediumDistanceRacers = 0;
+        $combinedFinishTimeForLongDistanceRace = 0;
+        $combinedFinishTimeForMediumDistanceRace = 0;
         $rowDataDTOs = [];
         foreach ($dataDTO->getData() as $rowDataDTO) {
             try {
+                $finishTime = $rowDataDTO->getFinishTime();
                 if ($rowDataDTO->getDistance() === 'long') {
-                    if ($this->racerInFrontFinishTime !== $rowDataDTO->getFinishTime()) {
+                    ++$countOfLongDistanceRacers;
+                    $combinedFinishTimeForLongDistanceRace = +$finishTime;
+                    if ($this->racerInFrontFinishTime !== $finishTime) {
                         ++$overallPlacement;
                         $incrementAgeCategoryPlacement = 1;
                     } else {
@@ -71,6 +81,8 @@ class RacerImporter
                 } else {
                     $placement = null;
                     $ageCategoryPlacement = null;
+                    $combinedFinishTimeForMediumDistanceRace = +$finishTime;
+                    ++$countOfMediumDistanceRacers;
                 }
 
                 $this->createRacer($raceId, $rowDataDTO, $racerImportResultDTO, $placement, $ageCategoryPlacement);
@@ -87,6 +99,12 @@ class RacerImporter
             // Increase EM reset interval
             $this->clearEntityManager();
         }
+
+        $this->updateRaceAverageFinishTime(
+            $raceId,
+            (int) round($combinedFinishTimeForMediumDistanceRace / $countOfMediumDistanceRacers),
+            (int) round($combinedFinishTimeForLongDistanceRace / $countOfLongDistanceRacers)
+        );
 
         $this->stopProgress();
 
@@ -114,9 +132,19 @@ class RacerImporter
     private function createRace(
         string $id,
         string $title,
-        \DateTimeImmutable $raceDate,
+        \DateTime $raceDate,
+        int $averageFinishTimeMedium,
+        int $averageFinishTimeLong,
     ): void {
-        $this->eventStore->store(new NewRaceImportedEvent($id, $title, $raceDate));
+        $this->eventStore->store(new NewRaceImportedEvent($id, $title, $raceDate, $averageFinishTimeMedium, $averageFinishTimeLong));
+    }
+
+    private function updateRaceAverageFinishTime(
+        string $id,
+        int $averageFinishTimeMedium,
+        int $averageFinishTimeLong,
+    ): void {
+        $this->eventStore->store(new UpdateRaceAverageFinishTimeEvent($id, $averageFinishTimeMedium, $averageFinishTimeLong));
     }
 
     private function createRacerWriteModel(

@@ -27,13 +27,12 @@ services:
             - '../src/Kernel.php'
 
 
-
-
     Symfony\Component\DependencyInjection\ContainerInterface: '@service_container'
 
     App\Race\Application\EventListener\CreateRaceEventListener:
         tags:
             - { name: kernel.event_listener, event: App\Shared\Application\Events\NewRaceImportedEvent, method: onNewRaceImported }
 
-
-
+    App\Race\Application\EventListener\UpdateRaceAverageFinishTimeEventListener:
+        tags:
+            - { name: kernel.event_listener, event: App\Shared\Application\Events\UpdateRaceAverageFinishTimeEvent, method: onRaceAverageFinishTimeChange }

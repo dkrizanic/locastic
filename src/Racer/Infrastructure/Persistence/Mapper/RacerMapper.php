@@ -16,10 +16,9 @@ class RacerMapper
             $racerEntity->getDistance(),
             $racerEntity->getAgeCategory(),
             $racerEntity->getRace(),
+            $racerEntity->getOverallPlacement(),
+            $racerEntity->getAgeCategoryPlacement()
         );
-
-        $domainObject->setOverallPlacement($racerEntity->getOverallPlacement());
-        $domainObject->setAgeCategoryPlacement($racerEntity->getAgeCategoryPlacement());
 
         return $domainObject;
     }

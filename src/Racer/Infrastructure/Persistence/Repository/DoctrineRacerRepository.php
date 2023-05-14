@@ -10,9 +10,6 @@ use App\Racer\Domain\WriteModel\CreateRacer as CreateRacerWriteModel;
 use App\Racer\Infrastructure\Persistence\Mapper\RacerMapper;
 use Doctrine\ORM\EntityManagerInterface;
 
-/**
- * @SuppressWarnings(PHPMD.StaticAccess)
- */
 class DoctrineRacerRepository implements RacerRepository
 {
     public function __construct(private readonly EntityManagerInterface $entityManager)

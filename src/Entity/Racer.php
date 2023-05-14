@@ -2,9 +2,40 @@
 
 namespace App\Entity;
 
+use ApiPlatform\Doctrine\Orm\Filter\OrderFilter;
+use ApiPlatform\Doctrine\Orm\Filter\SearchFilter;
+use ApiPlatform\Metadata\ApiFilter;
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Link;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity]
+#[
+    ApiResource(
+        operations: [
+        new GetCollection(
+            uriTemplate: '/racers/{raceId}',
+            uriVariables: [
+                'raceId' => new Link(toProperty: 'race', fromClass: Race::class),
+            ],
+        ),
+    ],
+    ),
+    ApiFilter(
+        SearchFilter::class,
+        properties: [
+            'fullName' => SearchFilter::STRATEGY_PARTIAL,
+            'distance' => SearchFilter::STRATEGY_PARTIAL,
+            'ageCategory' => SearchFilter::STRATEGY_PARTIAL,
+        ]
+    ),
+    ApiFilter(
+        OrderFilter::class,
+        properties: ['fullName', 'distance', 'ageCategory'],
+        arguments: ['orderParameterName' => 'order']
+    ),
+]
 class Racer
 {
     #[ORM\Column(nullable: true)]

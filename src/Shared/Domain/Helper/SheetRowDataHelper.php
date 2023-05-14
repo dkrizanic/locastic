@@ -21,7 +21,12 @@ trait SheetRowDataHelper
     {
         $rawValue = $this->getTrimmedString($rowData, $column);
 
-        sscanf($rawValue, '%d:%d:%d', $hours, $minutes, $seconds);
+        return $this->convertTimeToSeconds($rawValue);
+    }
+
+    protected function convertTimeToSeconds(string $time): int
+    {
+        sscanf($time, '%d:%d:%d', $hours, $minutes, $seconds);
         if (is_numeric($hours) === true && is_numeric($minutes) === true) {
             return (int) (($hours * 3600) + ($minutes * 60) + $seconds);
         }

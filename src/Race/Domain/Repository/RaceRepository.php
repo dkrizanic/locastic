@@ -6,10 +6,11 @@ namespace App\Race\Domain\Repository;
 
 use App\Race\Domain\Model\Race;
 use App\Race\Domain\WriteModel\CreateRace as CreateRaceWriteModel;
+use App\Race\Domain\WriteModel\UpdateRace as UpdateRaceWriteModel;
 
 interface RaceRepository
 {
-    public function fetchOneByTitle(string $title): ?Race;
+    public function fetchOne(string $id): ?Race;
 
     public function add(CreateRaceWriteModel $race): Race;
 
@@ -17,4 +18,6 @@ interface RaceRepository
 
     /** @return Race[] */
     public function fetchAll(): array;
+
+    public function update(UpdateRaceWriteModel $race): Race;
 }

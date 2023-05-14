@@ -1,0 +1,7 @@
+races:
+  path: /races
+  methods: [ 'GET' ]
+  defaults:
+    _controller: App\Race\Application\Controller\RaceController::getRaces
+    _api_resource_class: App\Entity\Race
+    _api_item_operation_name: races

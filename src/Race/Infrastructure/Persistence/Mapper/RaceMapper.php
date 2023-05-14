@@ -12,7 +12,9 @@ class RaceMapper
         return new Race(
             $raceEntity->getId(),
             $raceEntity->getTitle(),
-            $raceEntity->getDateTime()
+            $raceEntity->getDateTime(),
+            strval($raceEntity->getAverageFinishTimeMedium()),
+            strval($raceEntity->getAverageFinishTimeLong()),
         );
     }
 }

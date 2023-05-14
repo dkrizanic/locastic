@@ -90,10 +90,6 @@ class ImportRacerCommand extends ImportCommand
             // return Command::FAILURE;
         }
 
-        $dateTimeNow = new \DateTime();
-        $dateTimeToday = $dateTimeNow->format('Y/m/d');
-        $raceDate = new \DateTimeImmutable($dateTimeToday);
-
         try {
             $spreadSheet = $this->loadSpreadSheet($filePath)->getActiveSheet();
 
@@ -112,7 +108,7 @@ class ImportRacerCommand extends ImportCommand
                 $spreadSheetData,
                 $headerRowsCount,
                 $raceTitle,
-                $raceDate
+                new \DateTime(),
             );
 
             $this->initializeBar();

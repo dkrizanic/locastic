@@ -6,16 +6,15 @@ use App\Entity\Race;
 
 class Racer
 {
-    private ?int $ageCategoryPlacement = null;
-    private ?int $overallPlacement = null;
-
     public function __construct(
         public readonly string $id,
-        private string $fullName,
-        private int $finishTime,
-        private string $distance,
-        private string $ageCategory,
-        private Race $race,
+        private readonly string $fullName,
+        private readonly int $finishTime,
+        private readonly string $distance,
+        private readonly string $ageCategory,
+        private readonly Race $race,
+        private readonly ?int $ageCategoryPlacement = null,
+        private readonly ?int $overallPlacement = null
     ) {
     }
 
@@ -57,15 +56,5 @@ class Racer
     public function getAgeCategoryPlacement(): ?int
     {
         return $this->ageCategoryPlacement;
-    }
-
-    public function setAgeCategoryPlacement(?int $ageCategoryPlacement): void
-    {
-        $this->ageCategoryPlacement = $ageCategoryPlacement;
-    }
-
-    public function setOverallPlacement(?int $overallPlacement): void
-    {
-        $this->overallPlacement = $overallPlacement;
     }
 }
